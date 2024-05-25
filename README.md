@@ -14,5 +14,8 @@ _разработка Sayfullin R.R.
     $ source venv/bin/activate
 Установить зависимости:
     $ pip install -r requirements.txt
+    $ sudo apt install nodejs npm
+    $ npm install swagger-ui-dist
 $ Выход:
     $ deactivate
+
