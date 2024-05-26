@@ -1,7 +1,10 @@
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 
 @app.get("/")
-async def root():
-    return{"message": "Hello World!"}
+def read_root():
+    html_content = "<h2>Hello METAIT.COM!</h2>"
+    return HTMLResponse(content=html_content)
+
