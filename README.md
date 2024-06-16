@@ -1,7 +1,7 @@
 _разработка Sayfullin R.R.
 Инструкция актуальна для Linux-систем.
 
-Используемые технологии: python~=3.11 Django~=5.0 PostgreSQL
+Используемые технологии: python~=3.11 
 
 Скопируйте репозиторий с помощью команды: 
     $ git clone https://github.com/RuslanSayfullin/fastapi.git 
