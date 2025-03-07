@@ -21,24 +21,16 @@ def work_thread(camera=0,pdata=0,nDataSize=0):
             print("get image:nFrameNum[%d],nDataLen[%d],nWidth[%d],nHeight[%d]" % (
                 stImageData.nFrameNum, stImageData.nDataLen, stImageData.nWidth, stImageData.nHeight))
             
-            filename = f"image_{file_counter}"
+            filename = f"cloud_{file_counter}"
             # Кодируем filename в байты, чтобы передать как c_char_p
             filename_bytes = filename.encode('utf-8')
 
-            ret1=camera.MV3D_LP_SaveImage(ctypes.pointer(stImageData), 5, filename_bytes)
+            ret1=camera.MV3D_LP_SaveImage(ctypes.pointer(stImageData), 1, filename_bytes)
             file_counter += 1
             if ret1==0:
                 print("save image success!")
             else:
                 print("save image failed...")
-
-            stDstImageData=MV3D_LP_IMAGE_DATA()
-            ret2=camera.MV3D_LP_MapDepthToPointCloud(ctypes.pointer(stImageData),ctypes.pointer(stDstImageData))
-            print("ret2", ret2)
-            if ret2==0:
-                print("map depth to point cloud success!")
-            else:
-                print("map depth to point cloud failed...")
 
             time.sleep(5)
 

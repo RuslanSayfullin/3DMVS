@@ -81,3 +81,49 @@ _MV3D_LP_IMAGE_DATA_._fields_=[
 ]
 # Создает псевдоним для уже определенной структуры _MV3D_LP_IMAGE_DATA_. Это улучшает читаемость кода.
 MV3D_LP_IMAGE_DATA=_MV3D_LP_IMAGE_DATA_
+
+# Depht Data
+class _MV3D_LP_DEPTH_DATA_(Structure):
+    pass
+_MV3D_LP_DEPTH_DATA_._fields_=[
+    ('nWidth', c_uint),                                    # Image width
+    ('nHeight', c_uint),                                   # Image height
+    ('pData', POINTER(c_int16)),                           # Depth data
+    ('nDataLen', c_uint),                                  # Depth data length (bytes)
+    ('nFrameNum', c_uint),                                 # Frame number, which indicates the frame sequence
+    ('nTimeStamp', c_int64),                               # Timestamp uploaded by the device. It starts from 0 when the device is powered on. Refer to the device user manual for detailed rules
+    ('bValid', c_int32),                                   # Image valid flag,invalid if there is packet loss
+    ('fXScale', c_float),                                  # X scale
+    ('fYScale', c_float),                                  # Y scale
+    ('fZScale', c_float),                                  # Z scale
+    ('nXOffset', c_int),                                   # X offset
+    ('nYOffset', c_int),                                   # Y offset
+    ('nZOffset', c_int),                                   # Z offset
+    ('nReserved', c_byte * 16),                            # Reserved
+]
+MV3D_LP_DEPTH_DATA=_MV3D_LP_DEPTH_DATA_
+
+
+# 3D Point（F32）
+class _MV3D_LP_POINT_XYZ_S32_(Structure):
+    pass
+_MV3D_LP_POINT_XYZ_S32_._fields_=[
+    ('fX', c_float),
+    ('fY', c_float),
+    ('fZ', c_float),
+]
+MV3D_LP_POINT_XYZ_S32 = _MV3D_LP_POINT_XYZ_S32_
+
+# PointCloud Data
+class _MV3D_LP_POINTCLOUD_DATA_(Structure):
+    pass
+
+_MV3D_LP_POINTCLOUD_DATA_._fields_=[
+    ('pData', POINTER(_MV3D_LP_POINT_XYZ_S32_)),           # Pointcloud data
+    ('nDataLen', c_uint),                                  # Pointcloud data length (bytes)
+    ('nFrameNum', c_uint),                                 # Frame number, which indicates the frame sequence
+    ('nTimeStamp', c_int64),                               # Timestamp uploaded by the device. It starts from 0 when the device is powered on. Refer to the device user manual for detailed rules
+    ('bValid', c_int32),                                   # Image valid flag,invalid if there is packet loss
+    ('nReserved', c_byte * 16),                            # Reserved
+]
+MV3D_LP_POINTCLOUD_DATA=_MV3D_LP_POINTCLOUD_DATA_

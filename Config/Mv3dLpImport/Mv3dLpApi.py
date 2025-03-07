@@ -1,5 +1,4 @@
 # -- coding: utf-8 --
-
 import ctypes
 import os
 
@@ -113,6 +112,20 @@ class Mv3dLp():
         # Вызывает соответствующую функцию из DLL и возвращает ее результат.
         return Mv3dLpDll.MV3D_LP_SaveImage(pstImage,enFileType,chFileName)
     
+    #  @brief  depth image convert to pointcloud image
+    #  @param  pstDepthImageData        [IN]          Depth  data
+    #  @param  pstPointCloudData        [IN OUT]      Point Cloud data
+    #  @return Success, return MV3D_LP_OK. Failure,return error code
+    @staticmethod
+    def MV3D_LP_MapDepthToPointCloud(pstDepthImageData,pstPointCloudData):
+        # Устанавливает типы аргументов для вызова функции из DLL.
+        Mv3dLpDll.MV3D_LP_MapDepthToPointCloud.argtypes = (c_void_p, c_void_p)
+        # Определяет тип выходных данных функции как unsigned int
+        Mv3dLpDll.MV3D_LP_MapDepthToPointCloud.restype = c_uint
+        # Вызывает соответствующую функцию из DLL и возвращает ее результат.
+        return Mv3dLpDll.MV3D_LP_MapDepthToPointCloud(pstDepthImageData, pstPointCloudData)
+    
+    
     #  @brief  Stop measurements
     #  @param  handle                      [IN]            device handle
     #  @return Success, return MV3D_LP_OK. Failure, return error code
@@ -135,15 +148,4 @@ class Mv3dLp():
         # Вызывает соответствующую функцию из DLL и возвращает ее результат.
         return Mv3dLpDll.MV3D_LP_CloseDevice(byref(self.handle))
     
-    #  @brief  depth image convert to pointcloud image
-    #  @param  pstDepthImageData        [IN]          Depth  data
-    #  @param  pstPointCloudData        [IN OUT]      Point Cloud data
-    #  @return Success, return MV3D_LP_OK. Failure,return error code
-    @staticmethod
-    def MV3D_LP_MapDepthToPointCloud(pstDepthImageData,pstPointCloudData):
-        # Устанавливает типы аргументов для вызова функции из DLL.
-        Mv3dLpDll.MV3D_LP_MapDepthToPointCloud.argtypes = (c_void_p, c_void_p)
-        # Определяет тип выходных данных функции как unsigned int
-        Mv3dLpDll.MV3D_LP_MapDepthToPointCloud.restype = c_uint
-        # Вызывает соответствующую функцию из DLL и возвращает ее результат.
-        return Mv3dLpDll.MV3D_LP_MapDepthToPointCloud(pstDepthImageData, pstPointCloudData)
+    
