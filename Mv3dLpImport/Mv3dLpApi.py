@@ -58,5 +58,13 @@ class Mv3dLp():
         # Вызывает соответствующую функцию из DLL и возвращает ее результат.
         return Mv3dLpDll.MV3D_LP_GetDeviceList(pstDeviceInfos, nMaxDeviceCount, pDeviceNumber)
     
-
-    
+    #  @brief  Open device by serial number 
+    #  @param  handle                      [IN OUT]        device handle
+    #  @param  chSN                        [IN]            serial number
+    def MV3D_LP_OpenDeviceBySN(self, chSN):
+        # Устанавливает типы аргументов для вызова функции из DLL.
+        Mv3dLpDll.MV3D_LP_OpenDeviceBySN.argtypes = (c_void_p, c_void_p)
+        # Определяет тип выходных данных функции как unsigned int
+        Mv3dLpDll.MV3D_LP_OpenDeviceBySN.restype = c_uint
+        # Вызывает соответствующую функцию из DLL и возвращает ее результат.
+        return Mv3dLpDll.MV3D_LP_OpenDeviceBySN(byref(self.handle), chSN)

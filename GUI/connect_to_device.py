@@ -27,7 +27,7 @@ class DeviceInfoDialog(QWidget):
         num_devices_label = QLabel(f"Количество доступных устройств: {self.num_devices}")
 
         # Input field for device number
-        self.input_label = QLabel("Введите номер устройства для подключения:")
+        self.input_label = QLabel("Введите cерийный номер устройства для подключения:")
         self.input_label.setStyleSheet("font-weight: bold;")
         self.input_field = QLineEdit()
 
@@ -53,7 +53,7 @@ class DeviceInfoDialog(QWidget):
     def on_connect(self):
         try:
             nConnectionNum = int(self.input_field.text())
-            if nConnectionNum > self.num_devices:
+            if nConnectionNum >= self.num_devices:
                 self.message_label.setText(f"Введенное значение больше, чем количество доступных устройств.")
             else:
                 # Emit a signal or call a function with nConnectionNum

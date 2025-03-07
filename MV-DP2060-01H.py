@@ -12,6 +12,29 @@ import ctypes
 from Mv3dLpImport.Mv3dLpApi import Mv3dLp
 from Mv3dLpImport.Mv3dLpDefine import MV3D_LP_DEVICE_INFO_LIST, MV3D_LP_IMAGE_DATA
 
+
+error_codes = {
+    0: "Correct status code.",                                                  # 0x00000000
+    2147876864: "Incorrect or invalid handle.",                                 # 0x80060000
+    2147876865: "The function is not supported.",                               # 0x80060001
+    2147876866: "The buffer is full.",                                          # 0x80060002
+    2147876867: "Incorrect calling sequence.",                                  # 0x80060003
+    2147876868: "Incorrect parameter.",                                         # 0x80060004
+    2147876869: "Requesting for resource failed.",                              # 0x80060005
+    2147876870: "No data.",                                                     # 0x80060006
+    2147876871: "Incorrect precondition, or running environment has changed.",  # 0x80060007
+    2147876872: "The version is mismatched.",                                   # 0x80060008
+    2147876873: "Insufficient memory.",                                         # 0x80060009
+    2147876874: "Abnormal image. Incomplete image caused by packet loss.",      # 0x8006000A
+    2147876875: "Dynamically loading the dynamic link library failed.",         # 0x8006000B
+    2147876876: "Algorithm error.",                                             # 0x8006000C
+    2147876877: "The device is offline.",                                       # 0x8006000D
+    2147876878: "No access permission for device.",                             # 0x8006000E
+    2147876879: "The value exceeds range.",                                     # 0x8006000F
+    2147877119: "Unknown error.",                                               # 0x800600FF
+}
+
+
 if __name__ == "__main__":
     #  создает переменную nDeviceNum, которая хранит беззнаковое целое число 0
     nDeviceNum = ctypes.c_uint(0)
@@ -50,7 +73,7 @@ if __name__ == "__main__":
         for i in range(0, nDeviceNum.value):
             # Печатаем id, название и серийный номер
             devices_id = ""
-            devices_id += ("device: %d, " % i)
+            devices_id += ("device: %d " % i)
             strModeName = ""
 
             device_model_name = ""
@@ -63,15 +86,20 @@ if __name__ == "__main__":
                 strSerialNumber = strSerialNumber + chr(per)
             devices_serial_number = ("device SerialNumber: %s, " % strSerialNumber)
 
-        print(devices_id,  device_model_name, devices_serial_number)
-
         # Create device Object
         camera=Mv3dLp()
         # количество доступных устройств 
         nConnectionNum = show_device_info_dialog(devices_id, device_model_name, devices_serial_number, number_of_devices)
-
-        if int(nConnectionNum) > nDeviceNum.value:
+        if int(nConnectionNum) >= nDeviceNum.value:
             show_window(f"Введенное значение, больше чем количество доступных устройств.")
+            os.system('pause')
+            sys.exit()
+
+        # Open Device
+        open_device = camera.MV3D_LP_OpenDeviceBySN(stDeviceList.DeviceInfo[int(nConnectionNum)].chSerialNumber)
+        if open_device != 0:
+            error_message = error_codes.get(open_device) # Получаем описание ошибки
+            show_window(f"Ошибка при открытии устройства: {error_message} (Номер ошибки: {open_device}).")
             os.system('pause')
             sys.exit()
         
