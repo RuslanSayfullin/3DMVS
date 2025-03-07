@@ -68,3 +68,69 @@ class Mv3dLp():
         Mv3dLpDll.MV3D_LP_OpenDeviceBySN.restype = c_uint
         # Вызывает соответствующую функцию из DLL и возвращает ее результат.
         return Mv3dLpDll.MV3D_LP_OpenDeviceBySN(byref(self.handle), chSN)
+    
+    #  @brief  Start measurements
+    #  @param  handle                      [IN]            device handle
+    #  @return Success, return MV3D_LP_OK. Failure, return error code
+    def MV3D_LP_StartMeasure(self):
+        # Устанавливает типы аргументов для вызова функции из DLL.
+        Mv3dLpDll.MV3D_LP_StartMeasure.argtypes = (c_void_p,)
+        # Определяет тип выходных данных функции как unsigned int
+        Mv3dLpDll.MV3D_LP_StartMeasure.restype = c_uint
+        # Вызывает соответствующую функцию из DLL и возвращает ее результат.
+        return Mv3dLpDll.MV3D_LP_StartMeasure(self.handle)
+    
+    #  @brief  Get image data
+    #  @param  handle                      [IN]            device handle
+    #  @param  pstImageData                [IN OUT]        data set pointer
+    #  @param  nTimeout                    [IN]            timevalue（Unit: ms）
+    def MV3D_LP_GetImage(self, pstImageData, nTimeOut):
+        # Устанавливает типы аргументов для вызова функции из DLL.
+        Mv3dLpDll.MV3D_LP_GetImage.argtypes = (c_void_p, c_void_p, c_uint)
+        # Определяет тип выходных данных функции как unsigned int
+        Mv3dLpDll.MV3D_LP_GetImage.restype = c_uint
+        # Вызывает соответствующую функцию из DLL и возвращает ее результат.
+        return Mv3dLpDll.MV3D_LP_GetImage(self.handle, pstImageData, nTimeOut)
+    
+    #  @brief  save image to file
+    #  @brief  BMP support Mono8/C16/Rgb24
+    #  @brief  JPG support C16/JPEG/Rgb24
+    #  @brief  TIFF support C16/Rgb24
+    #  @brief  TIFF_U16/TIFF_F32 support C16
+    #  @brief  PLY/CSV/OBJ support ABC16/ABC32/ABC32f
+    #  @brief  PLY_BINARY/PLY_TEXTURE support ABC32f
+    #  @param  pstImage                 [IN]            image data 
+    #  @param  enFileType               [IN]            file type
+    #  @param  chFileName               [IN]            file name
+    #  @return Success, return MV3D_LP_OK. Failure, return error code
+    @staticmethod
+    def MV3D_LP_SaveImage(pstImage,enFileType,chFileName):
+        # Устанавливает типы аргументов для вызова функции из DLL.
+        Mv3dLpDll.MV3D_LP_SaveImage.argtypes = (c_void_p,c_int,c_char_p)
+        # Определяет тип выходных данных функции как unsigned int
+        Mv3dLpDll.MV3D_LP_SaveImage.restype = c_uint
+        # Вызывает соответствующую функцию из DLL и возвращает ее результат.
+        return Mv3dLpDll.MV3D_LP_SaveImage(pstImage,enFileType,chFileName)
+    
+    
+    #  @brief  Stop measurements
+    #  @param  handle                      [IN]            device handle
+    #  @return Success, return MV3D_LP_OK. Failure, return error code
+    def MV3D_LP_StopMeasure(self):
+        # Устанавливает типы аргументов для вызова функции из DLL.
+        Mv3dLpDll.MV3D_LP_StopMeasure.argtypes = (c_void_p,)
+        # Определяет тип выходных данных функции как unsigned int
+        Mv3dLpDll.MV3D_LP_StopMeasure.restype = c_uint
+        # Вызывает соответствующую функцию из DLL и возвращает ее результат.
+        return Mv3dLpDll.MV3D_LP_StopMeasure(self.handle)
+    
+    #  @brief  Close device 
+    #  @param  handle                      [IN]            device handle
+    #  @return Success, return MV3D_LP_OK. Failure, return error code
+    def MV3D_LP_CloseDevice(self):
+        # Устанавливает типы аргументов для вызова функции из DLL.
+        Mv3dLpDll.MV3D_LP_CloseDevice.argtypes = (c_void_p,)
+        # Определяет тип выходных данных функции как unsigned int
+        Mv3dLpDll.MV3D_LP_CloseDevice.restype = c_uint
+        # Вызывает соответствующую функцию из DLL и возвращает ее результат.
+        return Mv3dLpDll.MV3D_LP_CloseDevice(byref(self.handle))

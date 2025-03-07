@@ -27,7 +27,7 @@ class DeviceInfoDialog(QWidget):
         num_devices_label = QLabel(f"Количество доступных устройств: {self.num_devices}")
 
         # Input field for device number
-        self.input_label = QLabel("Введите cерийный номер устройства для подключения:")
+        self.input_label = QLabel("Введите ID устройства, для подключения:")
         self.input_label.setStyleSheet("font-weight: bold;")
         self.input_field = QLineEdit()
 

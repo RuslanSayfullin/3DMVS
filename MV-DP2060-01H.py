@@ -12,7 +12,22 @@ import ctypes
 from Mv3dLpImport.Mv3dLpApi import Mv3dLp
 from Mv3dLpImport.Mv3dLpDefine import MV3D_LP_DEVICE_INFO_LIST, MV3D_LP_IMAGE_DATA
 
-
+# Список, кодов  файлов;
+Mv3dLpFileType = {
+    "Undefined type.": 0,
+    "PLY": 1,
+    "CSV": 2,
+    "OBJ": 3,
+    "BMP": 4, 
+    "JPG": 5,
+    "TIFF (S16)": 6,
+    "TIFF (U16)": 7, 
+    "TIFF (F32)": 8,
+    "PLY (Binary)": 9,
+    "PCD": 10
+}
+ 
+# Список, возвращаемых кодов;
 error_codes = {
     0: "Correct status code.",                                                  # 0x00000000
     2147876864: "Incorrect or invalid handle.",                                 # 0x80060000
@@ -33,6 +48,35 @@ error_codes = {
     2147876879: "The value exceeds range.",                                     # 0x8006000F
     2147877119: "Unknown error.",                                               # 0x800600FF
 }
+
+g_bExit = False
+def work_thread(camera=0,pdata=0,nDataSize=0):
+    """Основная функция, для получения изображения."""
+    file_counter = 0
+
+    while True:
+        stImageData=MV3D_LP_IMAGE_DATA()
+        ret=camera.MV3D_LP_GetImage(ctypes.pointer(stImageData),1000)
+        if ret==0:
+            #print(f"get image:nFrameNum[{stImageData.nFrameNum}],nDataLen[{stImageData.nDataLen}],nWidth[{stImageData.nWidth}],nHeight[{stImageData.nHeight}]")
+
+            filename = f"cloud_{file_counter}"
+            # Кодируем filename в байты, чтобы передать как c_char_p
+            filename_bytes = filename.encode('utf-8')
+            enFileType = Mv3dLpFileType.get("BMP")  # тип нужного файла
+
+            image_saving_status=camera.MV3D_LP_SaveImage(ctypes.pointer(stImageData), 5, filename_bytes)
+            error_message = error_codes.get(image_saving_status)    # Получаем описание ошибки
+
+            file_counter += 1
+            if image_saving_status==0:
+                print("save image success!")
+                time.sleep(5)
+            else:
+                show_window(f"Ошибка сохранения данных: {error_message} (Номер ошибки: {image_saving_status}).")
+
+        if g_bExit == True:
+            break
 
 
 if __name__ == "__main__":
@@ -102,6 +146,47 @@ if __name__ == "__main__":
             show_window(f"Ошибка при открытии устройства: {error_message} (Номер ошибки: {open_device}).")
             os.system('pause')
             sys.exit()
+
+        # Start Measure
+        start_measure = camera.MV3D_LP_StartMeasure()
+        if start_measure != 0:
+            error_message = error_codes.get(start_measure) # Получаем описание ошибки
+            show_window(f"Измерение не удается: {error_message} (Номер ошибки: {start_measure}).")
+            camera.MV3D_LP_CloseDevice()
+            os.system('pause')
+            sys.exit()
+
+
+        # вызов основной функции, для получения изоброжения
+        try:
+            hthreadhandle=threading.Thread(target=work_thread,args=(camera,None,None))
+            hthreadhandle.start()
+        except:
+            print("error: unable to start thread")
+        print("press a key to stop measure.")
+        os.system('pause')
+        g_bExit = True
+        hthreadhandle.join()
+
+
+        # Stop Measure
+        stop_measure = camera.MV3D_LP_StopMeasure()
+        if stop_measure != 0:
+            error_message = error_codes.get(stop_measure) # Получаем описание ошибки
+            show_window(f"Остановить измерение не удается: {error_message} (Номер ошибки: {stop_measure}).")
+            print ("stop measure fail! ret[0x%x]" % ret)
+            sys.exit()
+
+        # Close Device
+        close_device = camera.MV3D_LP_CloseDevice()
+        if close_device != 0:
+            error_message = error_codes.get(close_device) # Получаем описание ошибки
+            show_window(f"Ошибка при закрытий устройства: {error_message} (Номер ошибки: {close_device}).")
+            sys.exit()
+
+    else:
+        show_window(f"Устройства для подключения, не найдены.")
+
         
 
 
