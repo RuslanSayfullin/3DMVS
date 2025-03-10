@@ -95,3 +95,7 @@ Settings: any user
 Action: Start a program
 Program/script: C:/Users/user/AppData/Local/Microsoft/WindowsApps/python3.12.exe
 Add argument (optional): C:\Users\user\Documents\3DMVS\hello_world.py
+
+
+######
+ip.addr == 192.168.1.252

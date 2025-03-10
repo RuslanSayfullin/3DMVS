@@ -49,34 +49,56 @@ error_codes = {
     2147877119: "Unknown error.",                                               # 0x800600FF
 }
 
+
 g_bExit = False
 def work_thread(camera=0,pdata=0,nDataSize=0):
-    """Основная функция, для получения изображения."""
+    "Основная функция, для получения изображения."
     file_counter = 0
 
     while True:
+        # Создается переменная для хранения дескриптора (handle) устройства.
+        # Дескриптор - это указатель на структуру данных или какой-то ресурс, используемый для доступа к объекту.
         stImageData=MV3D_LP_IMAGE_DATA()
-        ret=camera.MV3D_LP_GetImage(ctypes.pointer(stImageData),1000)
+        # Cоздается указатель на stImageData. Это необходимо, т.к. функции DLL ожидают указатели, если они хотят изменять данные.
+        stImageData_pointer = ctypes.pointer(stImageData)
+
+        #  предназначена для получения изображения с камеры, в течение 1000 миллисекунд (1 секунды)
+        ret=camera.MV3D_LP_GetImage(stImageData_pointer,1000)
         if ret==0:
             #print(f"get image:nFrameNum[{stImageData.nFrameNum}],nDataLen[{stImageData.nDataLen}],nWidth[{stImageData.nWidth}],nHeight[{stImageData.nHeight}]")
 
-            filename = f"cloud_{file_counter}"
+            filename = f"image_{file_counter}"
+
             # Кодируем filename в байты, чтобы передать как c_char_p
             filename_bytes = filename.encode('utf-8')
-            enFileType = Mv3dLpFileType.get("BMP")  # тип нужного файла
+            enFileType = Mv3dLpFileType.get("PLY")  # тип нужного файла
 
-            image_saving_status=camera.MV3D_LP_SaveImage(ctypes.pointer(stImageData), 5, filename_bytes)
-            error_message = error_codes.get(image_saving_status)    # Получаем описание ошибки
+            
+            if enFileType == "5" or enFileType == "1":
+                image_saving_status=camera.MV3D_LP_SaveImage(stImageData_pointer, enFileType, filename_bytes)
+                error_message = error_codes.get(image_saving_status)    # Получаем описание ошибки
 
-            file_counter += 1
-            if image_saving_status==0:
-                print("save image success!")
-                time.sleep(5)
-            else:
-                show_window(f"Ошибка сохранения данных: {error_message} (Номер ошибки: {image_saving_status}).")
+                file_counter += 1
+                if image_saving_status==0:
+                    print("save image success!")
+                    time.sleep(5)
+                else:
+                    show_window(f"Ошибка сохранения данных: {error_message} (Номер ошибки: {image_saving_status}).")
+            elif enFileType == "2":
+                # Создается переменная для хранения дескриптора (handle) устройства.
+                # Дескриптор - это указатель на структуру данных или какой-то ресурс, используемый для доступа к объекту.
+                stDstImageData=MV3D_LP_IMAGE_DATA()
+                ret=camera.MV3D_LP_MapDepthToPointCloud(stImageData_pointer, ctypes.pointer(stDstImageData))
+                if ret==0:
+                    print("map depth to point cloud success!")
+                else:
+                    print("map depth to point cloud failed...")
+
+
 
         if g_bExit == True:
             break
+
 
 
 if __name__ == "__main__":

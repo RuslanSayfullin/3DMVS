@@ -49,7 +49,7 @@ MV3D_LP_DEVICE_INFO_LIST = _MV3D_LP_DEVICE_INFO_LIST_
 
 
 
-# Получение изображения
+# ПОЛУЧЕНИЕ ИЗОБРАЖЕНИЯ
 class _MV3D_LP_IMAGE_DATA_(Structure):
     # промежуточный класcа, поля будут определены позже.
     pass
