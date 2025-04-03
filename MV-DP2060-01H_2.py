@@ -10,7 +10,7 @@ from GUI.connect_to_device import show_device_info_dialog
 import ctypes
 
 from Mv3dLpImport.Mv3dLpApi import Mv3dLp
-from Mv3dLpImport.Mv3dLpDefine import MV3D_LP_DEVICE_INFO_LIST, MV3D_LP_IMAGE_DATA, MV3D_LP_POINTCLOUD_DATA
+from Mv3dLpImport.Mv3dLpDefine import MV3D_LP_DEVICE_INFO_LIST, MV3D_LP_IMAGE_DATA
 
 # Список, кодов  файлов;
 Mv3dLpFileType = {
@@ -64,7 +64,6 @@ def work_thread(camera=0,pdata=0,nDataSize=0):
 
         #  предназначена для получения изображения с камеры, в течение 1000 миллисекунд (1 секунды)
         ret=camera.MV3D_LP_GetImage(stImageData_pointer,1000)
-        print("ret", ret)
         if ret==0:
             #print(f"get image:nFrameNum[{stImageData.nFrameNum}],nDataLen[{stImageData.nDataLen}],nWidth[{stImageData.nWidth}],nHeight[{stImageData.nHeight}]")
 
@@ -72,29 +71,28 @@ def work_thread(camera=0,pdata=0,nDataSize=0):
 
             # Кодируем filename в байты, чтобы передать как c_char_p
             filename_bytes = filename.encode('utf-8')
-            enFileType = Mv3dLpFileType.get("JPG")  # тип нужного файла
+            enFileType = Mv3dLpFileType.get("PLY")  # тип нужного файла
 
-            
+            print(enFileType)
+            if enFileType == 5 or enFileType == 1 or enFileType == 4:
+                image_saving_status=camera.MV3D_LP_SaveImage(stImageData_pointer, enFileType, filename_bytes)
+                error_message = error_codes.get(image_saving_status)    # Получаем описание ошибки
 
-            image_saving_status=camera.MV3D_LP_SaveImage(stImageData_pointer, 5, filename_bytes)
-            error_message = error_codes.get(image_saving_status)    # Получаем описание ошибки
+                file_counter += 1
+                if image_saving_status==0:
+                    print("save image success!")
+                    time.sleep(5)
+                else:
+                    show_window(f"Ошибка сохранения данных: {error_message} (Номер ошибки: {image_saving_status}).")
 
-            file_counter += 1
-            if image_saving_status==0:
-                print("save image success!")
-                time.sleep(5)
-            else:
-                show_window(f"Ошибка сохранения данных: {error_message} (Номер ошибки: {image_saving_status}).")
-                time.sleep(5)
-
-            stDstImageData=MV3D_LP_IMAGE_DATA()
-            ret=camera.MV3D_LP_MapDepthToPointCloud(stImageData_pointer,ctypes.pointer(stDstImageData))
-            if ret==0:
-                print("map depth to point cloud success!")
-            else:
-                print("map depth to point cloud failed...")
-
-            print(f"get image:nFrameNum[{ stDstImageData.nFrameNum}],nDataLen[{stDstImageData.nDataLen}],nWidth[{stDstImageData.nWidth}],nHeight[{stDstImageData.nHeight}]")
+                # Создается переменная для хранения дескриптора (handle) устройства.
+                # Дескриптор - это указатель на структуру данных или какой-то ресурс, используемый для доступа к объекту.
+                stDstImageData=MV3D_LP_IMAGE_DATA()
+                ret=camera.MV3D_LP_MapDepthToPointCloud(stImageData_pointer, ctypes.pointer(stDstImageData))
+                if ret==0:
+                    print("map depth to point cloud success!")
+                else:
+                    print("map depth to point cloud failed...")
 
 
 
@@ -198,6 +196,7 @@ if __name__ == "__main__":
         if stop_measure != 0:
             error_message = error_codes.get(stop_measure) # Получаем описание ошибки
             show_window(f"Остановить измерение не удается: {error_message} (Номер ошибки: {stop_measure}).")
+            print ("stop measure fail! ret[0x%x]" % ret)
             sys.exit()
 
         # Close Device
